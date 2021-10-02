@@ -4,15 +4,15 @@ const double pi = M_PI;
 const double f_0_1 = 17820;
 const double R_1 = 1008;
 const double U_in_1 = 0.2;
-
+//C=47.3 nF
 const double arr_f_1[] = {21809,  22309,  22615,  22871,  22927, 22985, 23070,  23170, 23309,  23527, 23858,  23928,  24422,  24940,  25450};
 const double arr_U_1[] = {0.1714, 0.2320, 0.2902, 0.3607, 0.382, 0.4,   0.4322, 0.475, 0.5332, 0.589, 0.5369, 0.5099, 0.3389, 0.2359, 0.1789};
-
+//C=82.7 nF
 const double arr_f_2[] = {17293, 17455, 17820, 18043,  18376};
 const double arr_U_2[] = {0.246, 0.286, 0.351, 0.3307, 0.2536};
 
-const double R_min = 6, R_max = 7, rho_min = 108, rho_max = 110;
-const int quantity = 10000;
+const double R_min = 3, R_max = 10, rho_min = 80, rho_max = 200;
+const int quantity = 1000;
 
 double U (double R, double rho, double f, double f_0, double U_in)
 {
@@ -68,12 +68,4 @@ int main ()
 	printf("%.10f\n", rho_optimal);
 	printf("%s", "Q_optimal = ");
 	printf("%.10f\n", rho_optimal / R_optimal);
-
-	/*while (1)
-	{
-		printf("%s", "Enter R, rho\n");
-		scanf ("%lf%lf", &R, &rho);
-		printf("%s", "SS = ");
-		printf("%lf\n", SquareSum (R, rho, &arr_f_1[0], &arr_U_1[0], size));
-	}*/	
 }
