@@ -1,4 +1,5 @@
 #include <sys/wait.h>
+#include <sys/ptrace.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -7,8 +8,11 @@ void proc_info (const char* procname);
 
 int main (int argc, char *argv[]) 
 {
-    pid_t cpid;
+    pid_t cpid, parent_pid;
     int wstatus;
+    siginfo_t data;
+
+    parent_pid = getpid ();
 
     cpid = fork(); //create child process
     if (cpid < 0) 
@@ -20,37 +24,14 @@ int main (int argc, char *argv[])
     if (cpid == 0) //Code executed by child
     {            
         proc_info ("Child");
-        if (argc > 1)
-        {
-            printf ("%s\n", argv [1]);
-            exit (atoi (argv[1])); // exit with code from the 1st argument
-        }
-        exit (42); //if there isn't 1st argument   
+        kill (parent_pid, SIGTERM); //kill parent
+        while (getppid () == parent_pid); //wait until child will not be reparented
+        proc_info ("Child");
+        exit (EXIT_SUCCESS);
     } 
     else //Code executed by parent
     {                      
-        if (waitpid (cpid, &wstatus, 0) == -1) //no options
-        {
-            perror ("waitpid");
-            exit (EXIT_FAILURE);
-        }
-
-        if (WIFEXITED (wstatus)) 
-        {
-            printf ("the child process has been completed\nstatus = %d\n\n", WEXITSTATUS (wstatus));
-            //WEXITSTATUS consists of the least significant 8 bits of the status argument that the child specified in a call to exit()
-        } 
-        else if (WIFSIGNALED (wstatus)) 
-        {
-            printf("the child process has been killed by signal %d\n", WTERMSIG (wstatus));
-            if (WCOREDUMP (wstatus)) 
-            {
-                printf ("child proc has cause a core dump\n");
-            }
-        } 
-
-        proc_info ("Parent");       
-        exit (EXIT_SUCCESS);
+        while (1);
     }
 }
 
