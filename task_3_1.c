@@ -53,6 +53,19 @@ int main (int argc, char* argv [])
     }
 
     copy_regular_file (source_fd, destination_fd, argv[2], &stat_buffer, max_length);
+    
+	if (close (source_fd) < 0) 
+	{
+        perror ("Failed to close source fd");
+        exit (EXIT_FAILURE);
+    }
+
+    if (close (destination_fd) < 0) 
+    {
+        perror ("Failed to close destination fd");
+        exit (EXIT_FAILURE);
+    }
+
     exit (EXIT_SUCCESS);
 }
 
@@ -88,7 +101,7 @@ int copy_regular_file (unsigned int source_fd, unsigned int destination_fd, cons
 
         if (written_quantity != received_quantity) 
         {
-            perror ("The number of symbols written doesn't match the number of symbols read.");
+            perror ("The number of written bytes is not equal to the number of read bytes");
             remove_file (destination_file);
             exit (EXIT_FAILURE);
         }
