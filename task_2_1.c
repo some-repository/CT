@@ -15,7 +15,6 @@ int main (int argc, char *argv[])
 		fprintf (stderr, "Usage: %s filename text-to-write\n", argv [0]);
 		return 1;
 	} 
-	printf ("%p, %p, %p\n", argv [0], argv [1], argv [2]);
 
 	int fd = open (argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0644); // fd - file descriptor, link to file
 																 // O_WRONLY - the file will be opened for writing only
