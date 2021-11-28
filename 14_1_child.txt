@@ -1,0 +1,6 @@
+[child]:
+PID 231,
+PPID 230,
+PGID 230,
+SID 10
+
