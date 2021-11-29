@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 
-const unsigned int max_length = 1024 * 1024;
+const unsigned int max_length = 1024 * 1024; //1 MB
 
 ssize_t writeall (int fd, const void *buf, size_t count); //signed size_t, negative values used for errors
 int remove_file (const char* filename);

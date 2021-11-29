@@ -8,15 +8,15 @@
 
 ssize_t writeall (int fd, const void *buf, size_t count); //signed size_t, negative values used for errors
 
-int main (int argc, char *argv[])
+int main (int argc, char *argv [])
 {
 	if (argc != 3)
 	{
-		fprintf (stderr, "Usage: %s filename text-to-write\n", argv [0]);
+		fprintf (stderr, "Usage: %s filename text_to_write\n", argv [0]);
 		return 1;
 	} 
 
-	int fd = open (argv[1], O_WRONLY | O_CREAT | O_TRUNC, 0644); // fd - file descriptor, link to file
+	int fd = open (argv [1], O_WRONLY | O_CREAT | O_TRUNC, 0644); // fd - file descriptor, link to file
 																 // O_WRONLY - the file will be opened for writing only
                                                                  // O_TRUNC - if the file already exists and is a regular file and the access mode allows writing it will be truncated to length 0
                                                                  // O_CREAT - if pathname does not exist, create it as a regular file
