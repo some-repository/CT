@@ -11,7 +11,7 @@ const unsigned int max_length = 1024 * 1024; //1 MB
 
 ssize_t writeall (int fd, const void *buf, size_t count); //signed size_t, negative values used for errors
 int remove_file (const char* filename);
-int copy_regular_file (unsigned int source_fd, unsigned int destination_fd, const char* destination_file, struct stat* stat_buffer, const unsigned int max_length);
+int copy_regular_file (int source_fd, int destination_fd, const char* destination_file, struct stat* stat_buffer, const unsigned int max_length);
 
 int main (int argc, char* argv []) 
 {
@@ -69,9 +69,9 @@ int main (int argc, char* argv [])
     exit (EXIT_SUCCESS);
 }
 
-int copy_regular_file (unsigned int source_fd, unsigned int destination_fd, const char* destination_file, struct stat* stat_buffer, const unsigned int max_length) 
+int copy_regular_file (int source_fd, int destination_fd, const char* destination_file, struct stat* stat_buffer, const unsigned int max_length) 
 {
-    char* buf = (char*) calloc (max_length, sizeof (char)); //allocating initialized by 0 buffer for max_length chars
+    char* buf = (char*) calloc (max_length, sizeof (char)); //allocating initialized by 0 buffer for max_length chars CHANGE TO MALLOC
     if (buf == NULL)
     {
     	fprintf (stderr, "buf pointer is NULL\n");
@@ -87,7 +87,7 @@ int copy_regular_file (unsigned int source_fd, unsigned int destination_fd, cons
         {
             perror ("Failed to read from the source file");
             remove_file (destination_file);
-            exit (EXIT_FAILURE);
+            exit (EXIT_FAILURE); //use return(error_code) instead of exit
         }
 
         ssize_t written_quantity = writeall (destination_fd, buf, received_quantity);
@@ -99,17 +99,10 @@ int copy_regular_file (unsigned int source_fd, unsigned int destination_fd, cons
             exit (EXIT_FAILURE);
         }
 
-        if (written_quantity != received_quantity) 
-        {
-            perror ("The number of written bytes is not equal to the number of read bytes");
-            remove_file (destination_file);
-            exit (EXIT_FAILURE);
-        }
-
         remain_quantity -= received_quantity;
     }
 
-    free (buf);
+    free (buf); //PLACE ALLOCATION AND FREE TO MAIN
     return 0;
 }
 

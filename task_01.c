@@ -15,7 +15,7 @@
 const int file_type_str_size = 20;
 const int time_str_size = 30;
 
-void get_file_type (mode_t st_mode, char *file_type_str);
+const char* get_file_type (mode_t st_mode);
 char *get_utc_time (const time_t *time_cnt, char* time_str);
 
 int main(int argc, char *argv[]) //argv[1] is pointer to the 1st element of the 2nd string which is pathname
@@ -41,12 +41,12 @@ int main(int argc, char *argv[]) //argv[1] is pointer to the 1st element of the 
         //%lx - long int in hex
 
         char file_type_str [file_type_str_size]; //here will be stored string describing file type
-        get_file_type (stat_buffer.st_mode, &file_type_str[0]);
-        printf("File type:                %s", &file_type_str [0]);
+        
+        printf("File type:                %s\n", get_file_type (stat_buffer.st_mode));
 
-        printf("I-node number:            %ld\n", (long) stat_buffer.st_ino);
+        printf("I-node number:            %ld\n", (uintmax_t) stat_buffer.st_ino);
 
-        printf("Permissions:                     %lo (octal)\n", (unsigned long) ((stat_buffer.st_mode) & 0x1FF)); //0x1FF is bit mask for the last 9 bits
+        printf("Permissions:                     %lo (octal)\n", (unsigned long) ((stat_buffer.st_mode) & ALL_PERMS)); //CHANGE TO ALL_PERMS 12 bit mask
 
         printf("Link count:               %ld\n", (long) stat_buffer.st_nlink); //number of hard links to the file
         
@@ -57,29 +57,30 @@ int main(int argc, char *argv[]) //argv[1] is pointer to the 1st element of the 
         printf("File size:                %lld bytes\n", (long long) stat_buffer.st_size);
         
         printf("Blocks allocated:         %lld\n", (long long) stat_buffer.st_blocks); //number of blocks allocated to the file, in 512-byte units.
+        																			   //ADD BLOCK SIZE
         //time
         char time_str [time_str_size];
-        printf("Last status change:       %s\n", get_utc_time (&stat_buffer.st_ctime, &time_str [0]));
+        printf("Last status change:       %s\n", get_utc_time (&stat_buffer.st_ctime, time_str));
         
-        printf("Last file access:         %s\n", get_utc_time (&stat_buffer.st_atime, &time_str [0]));
+        printf("Last file access:         %s\n", get_utc_time (&stat_buffer.st_atime, time_str));
         
-        printf("Last file modification:   %s\n", get_utc_time (&stat_buffer.st_mtime, &time_str [0]));
+        printf("Last file modification:   %s\n", get_utc_time (&stat_buffer.st_mtime, time_str));
 
         exit(EXIT_SUCCESS);
 }
 
-void get_file_type (mode_t st_mode, char *file_type_str)
+const char* get_file_type (mode_t st_mode)
 {
 	switch (st_mode & S_IFMT) //S_IFMT is a bit mask that we use to get 4 bits of file type (man inode)
     {
-        case S_IFBLK:  strcpy (file_type_str, "block device\n");            break;
-        case S_IFCHR:  strcpy (file_type_str, "character device\n");        break;
-        case S_IFDIR:  strcpy (file_type_str, "directory\n");               break;
-        case S_IFIFO:  strcpy (file_type_str, "FIFO/pipe\n");               break;
-        case S_IFLNK:  strcpy (file_type_str, "symlink\n");                 break;
-        case S_IFREG:  strcpy (file_type_str, "regular file\n");            break;
-        case S_IFSOCK: strcpy (file_type_str, "socket\n");                  break;
-        default:       strcpy (file_type_str, "unknown\n");                 break;
+        case S_IFBLK:  return "block device";
+        case S_IFCHR:  return "character device";
+        case S_IFDIR:  return "directory";
+        case S_IFIFO:  return "FIFO/pipe";
+        case S_IFLNK:  return "symlink";
+        case S_IFREG:  return "regular file";
+        case S_IFSOCK: return "socket";
+        default:       return "unknown";
     }
 }
 
@@ -87,6 +88,6 @@ char *get_utc_time (const time_t *time_cnt, char* time_str)
 {
 	struct tm *time_struct; //time data will be stored here
 
-    time_struct = gmtime (time_cnt); //convert to UTC
-    return asctime_r (time_struct, time_str); //returns NULL if the length of the result string more than time_str_size
+    time_struct = gmtime (time_cnt); //convert to UTC CHANGE TO gmtime_r()
+    return asctime_r (time_struct, time_str); //returns NULL if the length of the result string more than time_str_size CHANGE TO STRFTIME()
 }
