@@ -110,6 +110,9 @@ int main (int argc, char *argv [])
 		return FINDING_ADDRESS_ERROR;
 	}
 
+	const double delta = (x_max - x_min) / quantity;
+
+	//---------------------graph------------------------------------------
 	//open pipe to gnu plot using popen
 	FILE *gnuplot_pipe = popen ("gnuplot -persist", "w"); //"w" means that pipe was opened only for writing
 														  //"-persist" will keep the gnuplot window opened until manually closed
@@ -131,12 +134,22 @@ int main (int argc, char *argv [])
 
 	for (int i = 0; i < quantity; i++)
 	{
-		double x = x_min + i * ((x_max - x_min) / quantity);
+		double x = x_min + i * delta;
 		fprintf (gnuplot_pipe, "%.10lf %.10lf\n", x, (*tmp_function) (x)); //write graph points to pipe
 	}
+	pclose (gnuplot_pipe); //free resources
+	//---------------------graph------------------------------------------
 
-	//free resources
-	dlclose (tmplib);
-	pclose (gnuplot_pipe);
+	//integration
+	//rect
+	double sum = 0;
+	for (int i = 0; i < quantity - 1; i++)
+	{
+		double x = x_min + (i + 0.5) * delta; //between x(i) and x(i+1)
+		sum += ((*tmp_function) (x)) * delta; //write graph points to pipe
+	}
+	printf ("%.10lf\n", sum);
+
+	dlclose (tmplib); //free resources
 	return 0;
 }
